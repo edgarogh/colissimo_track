@@ -4,8 +4,8 @@ extern crate hyper_tls;
 extern crate serde;
 extern crate serde_json;
 
-mod errors;
-mod model;
+pub mod errors;
+pub mod model;
 
 use crate::errors::Error;
 use crate::model::{APIResponse, Shipment};

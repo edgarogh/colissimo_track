@@ -1,6 +1,6 @@
 [package]
 name = "colissimo_track"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Edgar Onghena"]
 edition = "2021"
 description = "An unofficial API client for Colissimo, a parcel delivery service"

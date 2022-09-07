@@ -2,7 +2,7 @@
 name = "colissimo_track"
 version = "0.1.0"
 authors = ["Edgar Onghena"]
-edition = "2018"
+edition = "2021"
 description = "An unofficial API client for Colissimo, a parcel delivery service"
 readme = "README.md"
 repository = "https://github.com/edgarogh/colissimo_track"
@@ -13,14 +13,13 @@ exclude = [
     "colissimo_track.iml",
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-chrono = "0.4.11"
-hyper = "0.13.6"
-hyper-tls = "0.4.1"
-serde = { version = "1.0.111", features = [ "derive" ] }
-serde_json = "1.0.53"
+chrono = "0.4.16"
+hyper = { version = "0.14.20", default-features = false, features = ["client", "http1", "http2"] }
+hyper-tls = "0.5.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
 
 [dev-dependencies]
-tokio = { version = "0.2", features = [ "full", "macros" ] }
+tokio = { version = "1.21", features = ["full", "macros"] }

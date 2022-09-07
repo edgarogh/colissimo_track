@@ -110,7 +110,7 @@ mod rfc3339 {
 
     pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<DateTime, D::Error> {
         let time: &str = Deserialize::deserialize(deserializer)?;
-        Ok(DateTime::parse_from_rfc3339(time).map_err(D::Error::custom)?)
+        DateTime::parse_from_rfc3339(time).map_err(D::Error::custom)
     }
 
     pub fn deserialize_option<'de, D: Deserializer<'de>>(

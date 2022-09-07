@@ -1,9 +1,3 @@
-extern crate chrono;
-extern crate hyper;
-extern crate hyper_tls;
-extern crate serde;
-extern crate serde_json;
-
 pub mod errors;
 pub mod model;
 
@@ -14,17 +8,16 @@ use hyper::{header, Body, Client, Request};
 use hyper_tls::HttpsConnector;
 
 fn extract_access_token(set_cookie_value: &str) -> Option<&str> {
-    let end = set_cookie_value.find(';')?;
-    Some(&set_cookie_value[..end])
+    set_cookie_value.split(';').next()
 }
 
 pub async fn get_tracking_info(shipment_id: &str) -> Result<Shipment, Error> {
-    if !shipment_id.chars().all(char::is_alphanumeric) {
-        return Result::Err(Error::IllegalParcelId);
+    if shipment_id.is_empty() || !shipment_id.chars().all(char::is_alphanumeric) {
+        return Err(Error::IllegalParcelId);
     }
 
     let https = HttpsConnector::new();
-    let client = Client::builder().build::<_, hyper::Body>(https);
+    let client = Client::builder().build::<_, Body>(https);
 
     // First request: Get access token in "Set Cookie" header
 
@@ -39,7 +32,7 @@ pub async fn get_tracking_info(shipment_id: &str) -> Result<Shipment, Error> {
     let first_response = client
         .request(first_request)
         .await
-        .map_err(|_| Error::Request)?;
+        .map_err(Error::Request)?;
 
     let cookie_header = first_response
         .headers()
@@ -62,20 +55,13 @@ pub async fn get_tracking_info(shipment_id: &str) -> Result<Shipment, Error> {
         .body(Body::default())
         .map_err(|_| Error::Response)?;
 
-    let api_response = client
-        .request(api_request)
-        .await
-        .map_err(|_| Error::Request)?;
+    let api_response = client.request(api_request).await.map_err(Error::Request)?;
 
     let body = hyper::body::to_bytes(api_response.into_body())
         .await
         .map_err(|_| Error::Response)?;
 
-    let body = String::from_utf8(body.to_vec()).map_err(|_| Error::Response)?;
-
-    println!("{:?}", body);
-
-    let api_response: APIResponse = serde_json::from_str(&body).unwrap();
+    let api_response: APIResponse = serde_json::from_slice(body.as_ref()).unwrap();
 
     api_response.into()
 }
